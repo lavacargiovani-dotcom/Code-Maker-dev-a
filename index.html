@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Maker | Solucoes em Tecnologia</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      background-color: #050508;
+      color: #ffffff;
+      scroll-behavior: smooth;
+    }
+
+    /* Canvas de fundo interativo */
+    #plexus-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Header e Navegacao Responsiva */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(5, 5, 8, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      background: linear-gradient(45deg, #00d2ff, #ff3366);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Menu Hamburger */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+    }
+
+    .menu-toggle span {
+      width: 25px;
+      height: 3px;
+      background-color: #ffffff;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+
+    nav a {
+      color: #e0e0e0;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: #00d2ff;
+    }
+
+    /* Secoes principais */
+    section {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 100px 20px 60px 20px;
+      z-index: 1;
+    }
+
+    .container {
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Home */
+    #home {
+      text-align: center;
+    }
+
+    #home h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+
+    #home h1 span.blue { color: #00d2ff; }
+    #home h1 span.red { color: #ff3366; }
+
+    #home p {
+      font-size: 18px;
+      color: #aaaaaa;
+      max-width: 700px;
+      margin: 0 auto 30px auto;
+      line-height: 1.6;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 14px 32px;
+      border-radius: 30px;
+      background: linear-gradient(45deg, #00d2ff, #ff3366);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 210, 255, 0.4);
+    }
+
+    /* Titulos */
+    .section-title {
+      font-size: 32px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: #888888;
+      margin-bottom: 40px;
+      font-size: 15px;
+    }
+
+    /* Cards e Grids */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 25px;
+      border-radius: 16px;
+      backdrop-filter: blur(5px);
+      transition: transform 0.3s, border-color 0.3s;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(0, 210, 255, 0.5);
+    }
+
+    .card h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: #00d2ff;
+    }
+
+    .card p {
+      color: #bbbbbb;
+      line-height: 1.5;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    /* Precos */
+    .price-card {
+      text-align: center;
+      border: 1px solid rgba(255, 51, 102, 0.2);
+    }
+
+    .price-card.popular {
+      border-color: #00d2ff;
+      background: rgba(0, 210, 255, 0.05);
+    }
+
+    .price {
+      font-size: 36px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 15px 0;
+    }
+
+    .price span {
+      font-size: 14px;
+      color: #888888;
+    }
+
+    /* Formulario */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #ff3366;
+    }
+
+    /* Ajustes para Telas Menores (Mobile) */
+    @media (max-width: 768px) {
+      header {
+        padding: 15px 20px;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+
+      nav {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background: rgba(5, 5, 8, 0.95);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: none;
+      }
+
+      nav.active {
+        display: block;
+      }
+
+      nav ul {
+        flex-direction: column;
+        padding: 20px;
+        gap: 15px;
+        text-align: center;
+      }
+
+      #home h1 {
+        font-size: 34px;
+      }
+
+      #home p {
+        font-size: 16px;
+      }
+
+      .section-title {
+        font-size: 26px;
+      }
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      color: #666666;
+      font-size: 14px;
+      z-index: 1;
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas de Fundo -->
+  <canvas id="plexus-canvas"></canvas>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">CODE MAKER</div>
+    <div class="menu-toggle" id="mobile-menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <nav id="nav-list">
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#sobre">Sobre Nos</a></li>
+        <li><a href="#servicos">Tipos de Sites</a></li>
+        <li><a href="#precos">Precos</a></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Pagina 1: Home -->
+  <section id="home">
+    <div class="container">
+      <h1><span class="blue">Code</span> <span class="red">Maker</span></h1>
+      <p>Transformando ideias em codigo de alta performance, sistemas modernos e solucoes digitais sob medida.</p>
+      <a href="#precos" class="btn">Ver Planos e Precos</a>
+    </div>
+  </section>
+
+  <!-- Pagina 2: Sobre Nos -->
+  <section id="sobre">
+    <div class="container">
+      <h2 class="section-title">Sobre Nos</h2>
+      <p class="section-subtitle">Tecnologia, inovacao e foco em resultados</p>
+      <div class="card">
+        <h3>Quem Somos</h3>
+        <p>A Code Maker e uma iniciativa focada no desenvolvimento de aplicacoes web modernas, entregando sites leves, rapidos e com design de alto impacto visual. Nosso objetivo e levar a sua marca para o proximo nivel no ambiente digital.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pagina 3: Tipos de Sites -->
+  <section id="servicos">
+    <div class="container">
+      <h2 class="section-title">Tipos de Sites</h2>
+      <p class="section-subtitle">Desenvolvimento focado na sua necessidade</p>
+      <div class="grid">
+        <div class="card">
+          <h3>Landing Pages</h3>
+          <p>Paginas de conversao direta, ideais para divulgar produtos, servicos e campanhas especificas com alto desempenho.</p>
+        </div>
+        <div class="card">
+          <h3>Sites Institucionais</h3>
+          <p>Estrutura completa com multiplas paginas para apresentar sua empresa, historia, portfolio e contatos.</p>
+        </div>
+        <div class="card">
+          <h3>Sistemas e Lojas</h3>
+          <p>Plataformas interativas, e-commerce e sistemas web personalizados com integracao de funcionalidades sob demanda.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pagina 4: Precos -->
+  <section id="precos">
+    <div class="container">
+      <h2 class="section-title">Planos e Precos</h2>
+      <p class="section-subtitle">Escolha o plano ideal para o seu projeto</p>
+      <div class="grid">
+        <div class="card price-card">
+          <h3>Basico</h3>
+          <p>Ideal para quem precisa de uma presenca digital simples e rapida.</p>
+          <div class="price">R$ 50,00</div>
+          <a href="#contato" class="btn" style="padding: 10px 20px; font-size: 14px;">Escolher Basico</a>
+        </div>
+        <div class="card price-card popular">
+          <h3>Pro</h3>
+          <p>Para empresas que buscam um site profissional completo.</p>
+          <div class="price">R$ 100,00</div>
+          <a href="#contato" class="btn" style="padding: 10px 20px; font-size: 14px;">Escolher Pro</a>
+        </div>
+        <div class="card price-card">
+          <h3>Mega</h3>
+          <p>Solucao robusta para projetos complexos e lojas virtuais.</p>
+          <div class="price">R$ 200,00</div>
+          <a href="#contato" class="btn" style="padding: 10px 20px; font-size: 14px;">Escolher Mega</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pagina 5: Contato via WhatsApp -->
+  <section id="contato">
+    <div class="container">
+      <h2 class="section-title">Fale Conosco</h2>
+      <p class="section-subtitle">Preencha abaixo para enviar uma mensagem direto no WhatsApp</p>
+      <form id="whatsapp-form">
+        <input type="text" id="nome" placeholder="Seu Nome" required>
+        <textarea rows="4" id="mensagem" placeholder="Descreva o projeto que deseja ou tire suas duvidas" required></textarea>
+        <button type="submit" class="btn" style="border:none; cursor:pointer;">Enviar via WhatsApp</button>
+      </form>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Code Maker. Todos os direitos reservados.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Menu Mobile
+    const mobileMenu = document.getElementById('mobile-menu');
+    const navList = document.getElementById('nav-list');
+
+    mobileMenu.addEventListener('click', () => {
+      navList.classList.toggle('active');
+    });
+
+    // Envio do Formulario para o WhatsApp
+    const form = document.getElementById('whatsapp-form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const nome = document.getElementById('nome').value;
+      const mensagem = document.getElementById('mensagem').value;
+      const numeroWhatsapp = "5547996919090";
+
+      const textoFormatado = `Ola, me chamo ${nome}.%0A%0AMensagem: ${mensagem}`;
+      const urlWhatsapp = `https://wa.me/${numeroWhatsapp}?text=${textoFormatado}`;
+
+      window.open(urlWhatsapp, '_blank');
+    });
+
+    // Canvas de Particulas
+    const canvas = document.getElementById('plexus-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const particleCount = window.innerWidth < 768 ? 50 : 100;
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.vx = (Math.random() - 0.5) * 1.2;
+        this.vy = (Math.random() - 0.5) * 1.2;
+        this.radius = Math.random() * 2 + 1;
+        this.color = Math.random() > 0.5 ? '#00d2ff' : '#ff3366';
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > width) this.vx *= -1;
+        if (this.y < 0 || this.y > height) this.vy *= -1;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+
+    function connect() {
+      const maxDistance = 110;
+      for (let a = 0; a < particles.length; a++) {
+        for (let b = a; b < particles.length; b++) {
+          let dx = particles[a].x - particles[b].x;
+          let dy = particles[a].y - particles[b].y;
+          let dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < maxDistance) {
+            let opacity = 1 - (dist / maxDistance);
+            let strokeColor = particles[a].color === '#00d2ff' 
+              ? `rgba(0, 210, 255, ${opacity * 0.35})` 
+              : `rgba(255, 51, 102, ${opacity * 0.35})`;
+
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particles[a].x, particles[a].y);
+            ctx.lineTo(particles[b].x, particles[b].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      connect();
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
